@@ -1,0 +1,13 @@
+# PROJECT Routes
+# This file defines the Projects application routes (Higher priority routes first)
+# ~~~~
+
+# Page.
+GET        /wizard/:wizard/:user        server.WizardController.wizardPage(wizard: String, user: String)
+
+# Rest API
+GET        /user/:userName              server.WizardController.user(userName: String)
+GET        /wizard/:wizardIdent         server.WizardController.wizard(wizardIdent: String)
+
+# Reuse the routes from the ADAPTERS project
+->         /                            adapters.Routes
