@@ -2,7 +2,8 @@ package client
 
 import com.thoughtworks.binding.Binding.Var
 import pme123.adapters.shared.Logger
-import shared.{User, WizardData}
+import shared.StepStatus.ACTIVE
+import shared.{User, WizardData, WizardStep}
 
 trait WizardUIStore extends Logger {
 
@@ -11,6 +12,16 @@ trait WizardUIStore extends Logger {
   def changeWizardData(wizardData: WizardData) {
     info(s"UIStore: changeWizardData ${wizardData.ident}")
     wizardUIState.wizardData.value = wizardData
+    wizardUIState.activeStep.value = wizardData.steps.find(_.status == ACTIVE)
+  }
+
+  def changeActiveStep(maybStep: Option[WizardStep]) {
+    info(s"UIStore: changeActiveStep ${maybStep.map(_.ident)}")
+    val wizardData =
+      wizardUIState.wizardData.value
+      .changeActiveStep(maybStep)
+    wizardUIState.wizardData.value = wizardData
+    wizardUIState.activeStep.value = maybStep
   }
 
   def changeUser(user: User) {
@@ -22,5 +33,7 @@ trait WizardUIStore extends Logger {
 case class WizardUIState(
                           wizardData: Var[WizardData] = Var(WizardData("dummyWizard"))
                           , user: Var[User] = Var(User.defaultUser)
+                          , activeStep: Var[Option[WizardStep]] = Var(None)
+
                         )
 

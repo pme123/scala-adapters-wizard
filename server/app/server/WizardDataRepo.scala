@@ -6,12 +6,7 @@ import WizardStep._
 object WizardDataRepo {
 
   val wizardDataSet: Set[WizardData] = Set(
-    WizardData("Delivery Wizard", List(
-      WizardStep(shippingIdent,"Shipping", "Choose your shipping options", StepStatus.ACTIVE)
-      , WizardStep(billingIdent,"Billing", "Enter billing information")
-      , WizardStep(confirmOrderIdent,"Confirm Order", "Verify order details")
-
-    ))
+    WizardData.deliveryWizard
     , WizardData.defaultWizardData
   )
 

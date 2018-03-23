@@ -2,15 +2,62 @@ package shared
 
 import julienrf.json.derived
 import play.api.libs.json.{Json, OFormat}
+import shared.StepStatus.{ACTIVE, NONE}
+import shared.WizardStep.{billingIdent, confirmOrderIdent, shippingIdent}
 
 case class WizardData(ident: WizardData.WizardIdent
-                      , steps: List[WizardStep] = Nil)
+                      , steps: List[WizardStep] = Nil) {
+
+  def hasNextStep(step: WizardStep): Boolean =
+    nextStep(step).nonEmpty
+
+  def nextStep(step: WizardStep): Option[WizardStep] =
+    steps.dropWhile(_.ident != step.ident) match {
+      case _ :: next :: _ => Some(next)
+      case _ => None
+    }
+
+  def hasBackStep(step: WizardStep): Boolean =
+    backStep(step).nonEmpty
+
+  def backStep(step: WizardStep): Option[WizardStep] =
+    steps.takeWhile(_.ident != step.ident) match {
+      case Nil => None
+      case rest => Some(rest.last)
+    }
+
+  def changeActiveStep(maybeStep: Option[WizardStep]): WizardData = {
+    val activeStep = maybeStep.map(_.copy(status = ACTIVE))
+    val inactiveStep = steps.find(_.status == ACTIVE).map(_.copy(status = NONE))
+
+    (for {
+      active <- activeStep
+      inactive <- inactiveStep
+    } yield {
+      changeStep(active)
+        .changeStep(inactive)
+    }).getOrElse(this)
+  }
+
+  def changeStep(step: WizardStep): WizardData = {
+    val newSteps = steps.foldLeft(List[WizardStep]())((a, b) => if (b.ident == step.ident) a :+ step else a :+ b)
+    copy(steps = newSteps)
+  }
+
+
+}
 
 import pme123.adapters.shared.AdaptersExtensions._
 
 object WizardData {
 
   val defaultWizardData = WizardData("Empty Wizard")
+
+  val deliveryWizard = WizardData("Delivery Wizard", List(
+    WizardStep(shippingIdent, "Shipping", "Choose your shipping options", StepStatus.ACTIVE)
+    , WizardStep(billingIdent, "Billing", "Enter billing information")
+    , WizardStep(confirmOrderIdent, "Confirm Order", "Verify order details")
+  ))
 
   type WizardIdent = String
 

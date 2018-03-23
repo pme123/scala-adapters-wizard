@@ -6,8 +6,6 @@ import org.scalajs.dom.raw.HTMLElement
 import pme123.adapters.client.ClientUtils
 import shared.{User, WizardData, WizardStep}
 
-import scala.scalajs.js.Dynamic.{global => g}
-
 case class Wizard(context: String, websocketPath: String)
   extends WizardUIStore
     with ClientUtils {
