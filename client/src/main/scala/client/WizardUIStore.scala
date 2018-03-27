@@ -3,7 +3,7 @@ package client
 import com.thoughtworks.binding.Binding.Var
 import pme123.adapters.shared.Logger
 import shared.StepStatus.ACTIVE
-import shared.{User, WizardData, WizardStep}
+import shared.{CardType, User, WizardData, WizardStep}
 
 trait WizardUIStore extends Logger {
 
@@ -34,6 +34,7 @@ case class WizardUIState(
                           wizardData: Var[WizardData] = Var(WizardData("dummyWizard"))
                           , user: Var[User] = Var(User.defaultUser)
                           , activeStep: Var[Option[WizardStep]] = Var(None)
-
+                          , shippingData: Var[ShippingData] = Var(ShippingData())
+                          , billingData: Var[BillingData] = Var(BillingData(Var(CardType.VISA)))
                         )
 

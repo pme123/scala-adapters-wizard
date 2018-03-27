@@ -108,4 +108,32 @@ object StepStatus {
 
 }
 
+sealed trait CardType {
+  def ident: String
+
+  def name: String
+}
+
+object CardType {
+  implicit val jsonFormat: OFormat[CardType] = derived.oformat[CardType]()
+
+  case object MASTERCARD extends CardType {
+    val ident: String = "mastercard"
+    val name: String = "Mastercard"
+  }
+
+  case object VISA extends CardType {
+    val ident: String = "visa"
+    val name: String = "Visa"
+  }
+
+  case object AMEX extends CardType {
+    val ident: String = "amex"
+    val name: String = "American Express"
+  }
+
+  def all = Seq(MASTERCARD, VISA, AMEX)
+
+}
+
 
