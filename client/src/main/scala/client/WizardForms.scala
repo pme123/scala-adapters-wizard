@@ -11,12 +11,17 @@ case class WizardForms(wizardUIState: WizardUIState)
 
   @dom
   def create(): Binding[HTMLElement] = {
+    val activeStep = wizardUIState.activeStep.bind
 
     <div class="ui form">
-      {ShippingForm(wizardUIState).shipping.bind}{//
-      BillingForm(wizardUIState).billing.bind}{//
-      ConfirmOrderForm(wizardUIState).confirmOrder.bind //
-      }<div class="ui three bottom attached buttons">
+      {activeStep match {
+      case Some(WizardStep(WizardStep.billingIdent, _, _, _)) =>
+        BillingForm(wizardUIState).billing.bind
+      case Some(WizardStep(WizardStep.confirmOrderIdent, _, _, _)) =>
+        ConfirmOrderForm(wizardUIState).confirmOrder.bind
+      case _ =>
+        ShippingForm(wizardUIState).shipping.bind
+    }}<div class="ui three bottom attached buttons">
       {backButton.bind //
       }<div class="or" data:data-text=""></div>{//
       nextButton.bind}

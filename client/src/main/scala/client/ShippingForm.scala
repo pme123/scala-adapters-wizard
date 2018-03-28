@@ -6,7 +6,6 @@ import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
 import pme123.adapters.client.ClientUtils
 import pme123.adapters.client.SemanticUI.jq2semantic
-import shared.WizardStep
 
 case class ShippingData(shippingOption: Var[ShippingOption] = Var(ShippingOption.FREE))
 
@@ -25,9 +24,7 @@ case class ShippingForm(wizardUIState: WizardUIState)
 
   @dom
   def shipping: Binding[HTMLElement] = {
-    val activeStep = wizardUIState.activeStep.bind
     val shippingData = wizardUIState.shippingData.value
-    if (activeStep.exists(st => st.ident == WizardStep.shippingIdent))
       <div class="ui attached segment"
            onmouseover={_: Event =>
              // this as be done after div is rendered
@@ -38,7 +35,6 @@ case class ShippingForm(wizardUIState: WizardUIState)
             .map(optionElem(_, shippingData.shippingOption.value)): _*).map(_.bind)}
         </div>
       </div>
-    else <span></span>
   }
 
   @dom

@@ -17,14 +17,12 @@ extends ClientUtils{
 
   @dom
   def confirmOrder: Binding[HTMLElement] = {
-    val activeStep = wizardUIState.activeStep.bind
     val billingData = wizardUIState.billingData.value
     val shippingOption = wizardUIState.shippingData.value.shippingOption.value
     val user = wizardUIState.user.bind
     val orderList = Seq(("Crazy little Supertoy", 99.0)
       , ("Akku CLE 123", 34.5)
       , (s"Shipping (${shippingOption.label})", shippingOption.amount))
-    if (activeStep.exists(st => st.ident == WizardStep.confirmOrderIdent))
       <div class="ui attached segment"
            onmouseover={_: Event =>
              // this as be done after div is rendered
@@ -59,7 +57,6 @@ extends ClientUtils{
         </table>
 
       </div>
-    else <span></span>
   }
 
   @dom

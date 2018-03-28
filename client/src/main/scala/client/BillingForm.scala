@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
 import pme123.adapters.client.ClientUtils
 import pme123.adapters.client.SemanticUI.jq2semantic
-import shared.{CardType, WizardStep}
+import shared.CardType
 
 import scala.scalajs.js
 
@@ -46,9 +46,7 @@ extends ClientUtils {
 
   @dom
   def billing: Binding[HTMLElement] = {
-    val activeStep = wizardUIState.activeStep.bind
     val billingData = wizardUIState.billingData.value
-    if (activeStep.exists(st => st.ident == WizardStep.billingIdent))
       <div class="ui attached segment">
         <iframe style="display:none" onload={_: Event =>
           // this as be done after div is rendered
@@ -134,7 +132,6 @@ extends ClientUtils {
           </div>
         </div>
       </div>
-    else <span></span>
   }
 
   @dom

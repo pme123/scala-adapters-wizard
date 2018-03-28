@@ -27,6 +27,7 @@ case class WizardClient(context: String, websocketPath: String)
     {"""
     .full-height {
       height: 100%;
+      max-height:calc(100vh - 8em);
     }
   """}
   </style>
