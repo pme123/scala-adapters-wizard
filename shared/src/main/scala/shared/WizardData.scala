@@ -1,9 +1,8 @@
 package shared
 
 import julienrf.json.derived
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsObject, Json, OFormat}
 import shared.StepStatus.{ACTIVE, NONE}
-import shared.WizardStep.{billingIdent, confirmOrderIdent, shippingIdent}
 
 case class WizardData(ident: WizardData.WizardIdent
                       , steps: List[WizardStep] = Nil) {
@@ -51,14 +50,6 @@ import pme123.adapters.shared.AdaptersExtensions._
 
 object WizardData {
 
-  val defaultWizardData = WizardData("Empty Wizard")
-
-  val deliveryWizard = WizardData("Delivery Wizard", List(
-    WizardStep(shippingIdent, "Shipping", "Choose your shipping options", StepStatus.ACTIVE)
-    , WizardStep(billingIdent, "Billing", "Enter billing information")
-    , WizardStep(confirmOrderIdent, "Confirm Order", "Verify order details")
-  ))
-
   type WizardIdent = String
 
   def extractIdent(webPath: String): String =
@@ -70,15 +61,16 @@ object WizardData {
 
 }
 
+trait StepData
+
 case class WizardStep(ident: String
                       , title: String
                       , descr: String
-                      , status: StepStatus = StepStatus.NONE)
+                      , stepData: Option[JsObject] = None
+                      , status: StepStatus = StepStatus.NONE
+                      )
 
 object WizardStep {
-  val shippingIdent = "shipping"
-  val billingIdent = "billing"
-  val confirmOrderIdent = "confirm-order"
 
   implicit val jsonFormat: OFormat[WizardStep] = Json.format[WizardStep]
 }
@@ -108,34 +100,6 @@ object StepStatus {
 
 }
 
-sealed trait CardType {
-  def ident: String
 
-  def name: String
-}
-
-object CardType {
-  implicit val jsonFormat: OFormat[CardType] = derived.oformat[CardType]()
-
-  case object MASTERCARD extends CardType {
-    val ident: String = "mastercard"
-    val name: String = "Mastercard"
-  }
-
-  case object VISA extends CardType {
-    val ident: String = "visa"
-    val name: String = "Visa"
-  }
-
-  case object AMEX extends CardType {
-    val ident: String = "amex"
-    val name: String = "American Express"
-  }
-
-  def all = Seq(MASTERCARD, VISA, AMEX)
-
-  def apply(ident:String): CardType = all.find(_.ident == ident).getOrElse(MASTERCARD)
-
-}
 
 

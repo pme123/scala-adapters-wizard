@@ -3,7 +3,7 @@ package client
 import com.thoughtworks.binding.Binding.Var
 import pme123.adapters.shared.Logger
 import shared.StepStatus.ACTIVE
-import shared.{CardType, User, WizardData, WizardStep}
+import shared.{ShippingData, User, WizardData, WizardStep}
 
 trait WizardUIStore extends Logger {
 

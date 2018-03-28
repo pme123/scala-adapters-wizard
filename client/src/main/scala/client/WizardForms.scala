@@ -15,9 +15,9 @@ case class WizardForms(wizardUIState: WizardUIState)
 
     <div class="ui form">
       {activeStep match {
-      case Some(WizardStep(WizardStep.billingIdent, _, _, _)) =>
+      case Some(WizardStep(shared.billingIdent, _, _, _, _)) =>
         BillingForm(wizardUIState).billing.bind
-      case Some(WizardStep(WizardStep.confirmOrderIdent, _, _, _)) =>
+      case Some(WizardStep(shared.confirmOrderIdent, _, _, _, _)) =>
         ConfirmOrderForm(wizardUIState).confirmOrder.bind
       case _ =>
         ShippingForm(wizardUIState).shipping.bind

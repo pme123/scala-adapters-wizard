@@ -6,8 +6,8 @@ import WizardStep._
 object WizardDataRepo {
 
   val wizardDataSet: Set[WizardData] = Set(
-    WizardData.deliveryWizard
-    , WizardData.defaultWizardData
+    shared.deliveryWizard
+    , shared.defaultWizardData
   )
 
   def wizard(wizardIdent: String): WizardData =

@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
 import pme123.adapters.client.ClientUtils
 import pme123.adapters.client.SemanticUI.jq2semantic
-import shared.CardType
+import shared.{CardType, Month}
 
 import scala.scalajs.js
 
@@ -19,27 +19,6 @@ case class BillingData(cardFirstName: Var[String] = Var("Peter")
                        , cardExpYear: Var[Int] = Var(2018)
                       )
 
-case class Month(ident: String, label: String)
-
-object Month {
-  val JAN = Month("jan", "January")
-  val FEB = Month("feb", "February")
-  val MAR = Month("mar", "March")
-  val APR = Month("apr", "April")
-  val MAY = Month("may", "May")
-  val JUN = Month("jun", "June")
-  val JUL = Month("jul", "July")
-  val AUG = Month("aug", "August")
-  val SEP = Month("sep", "September")
-  val OCT = Month("oct", "October")
-  val NOV = Month("nov", "November")
-  val DEC = Month("dec", "December")
-
-  val all = Seq(JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC)
-
-  def apply(ident: String): Month = all.find(_.ident == ident).getOrElse(JAN)
-
-}
 
 case class BillingForm(wizardUIState: WizardUIState)
 extends ClientUtils {

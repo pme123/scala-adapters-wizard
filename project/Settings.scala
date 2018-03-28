@@ -21,6 +21,7 @@ object Settings {
   // main versions
   lazy val scalaV = "2.12.4"
   lazy val adaptersV = "1.0.8"
+  lazy val bindingV = "11.0.1"
 
   lazy val scalaTestV = "3.0.4"
 
@@ -77,6 +78,7 @@ object Settings {
 
   lazy val sharedDependencies: Seq[Def.Setting[_]] = Def.settings(libraryDependencies ++= Seq(
     "com.github.pme123.scala-adapters" %%% "scala-adapters" % adaptersV
+    , "com.thoughtworks.binding" %%% "binding" % bindingV
     , "org.scalatest" %%% "scalatest" % scalaTestV % Test
 
   ))
