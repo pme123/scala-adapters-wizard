@@ -16,10 +16,20 @@ case class WizardClient(context: String, websocketPath: String)
 
   @dom
   protected def render: Binding[HTMLElement] = {
-    <div>
-      {Wizard(context, websocketPath).create().bind}
+    <div class="full-height">
+      {Wizard(context, websocketPath).create().bind}{//
+      css.bind}
     </div>
   }
+
+  @dom
+  private def css = <style>
+    {"""
+    .full-height {
+      height: 100%;
+    }
+  """}
+  </style>
 
 }
 

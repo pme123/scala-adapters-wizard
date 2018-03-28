@@ -35,6 +35,6 @@ case class WizardUIState(
                           , user: Var[User] = Var(User.defaultUser)
                           , activeStep: Var[Option[WizardStep]] = Var(None)
                           , shippingData: Var[ShippingData] = Var(ShippingData())
-                          , billingData: Var[BillingData] = Var(BillingData(Var(CardType.VISA)))
+                          , billingData: Var[BillingData] = Var(BillingData())
                         )
 

@@ -19,10 +19,11 @@ extends ClientUtils{
   def confirmOrder: Binding[HTMLElement] = {
     val activeStep = wizardUIState.activeStep.bind
     val billingData = wizardUIState.billingData.value
+    val shippingOption = wizardUIState.shippingData.value.shippingOption.value
     val user = wizardUIState.user.bind
     val orderList = Seq(("Crazy little Supertoy", 99.0)
       , ("Akku CLE 123", 34.5)
-      , ("Shipping", 3.20))
+      , (s"Shipping (${shippingOption.label})", shippingOption.amount))
     if (activeStep.exists(st => st.ident == WizardStep.confirmOrderIdent))
       <div class="ui attached segment"
            onmouseover={_: Event =>
@@ -50,6 +51,10 @@ extends ClientUtils{
           <tbody>
             {infoRow("Card Owner", s"${billingData.cardFirstName.bind} ${billingData.cardName.bind}").bind}
             {infoRow("Card Type", s"${billingData.cardType.bind.name}").bind}
+            {infoRow("Card Number", s"${billingData.cardNumber.bind}").bind}
+            {infoRow("Card CVC", s"${billingData.cardCVC.bind}").bind}
+            {infoRow("Card Expiration Month", s"${billingData.cardExpMount.bind.label}").bind}
+            {infoRow("Card Expiration Year", s"${billingData.cardExpYear.bind}").bind}
           </tbody>
         </table>
 

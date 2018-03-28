@@ -18,7 +18,7 @@ case class Wizard(context: String, websocketPath: String)
 
   @dom
   def create(): Binding[HTMLElement] =
-    <div>
+    <div class="full-height">
       {adapterHeader.bind}{//
       wizardForm.bind}
     </div>
@@ -41,7 +41,7 @@ case class Wizard(context: String, websocketPath: String)
 
   @dom
   private def wizardForm =
-    <div class="ui main container">
+    <div class="ui main container full-height">
       <div class="ui segments">
         {steps.bind}<div class="ui attached segment">
         {WizardForms(wizardUIState).create().bind}

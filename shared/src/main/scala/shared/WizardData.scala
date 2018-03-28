@@ -134,6 +134,8 @@ object CardType {
 
   def all = Seq(MASTERCARD, VISA, AMEX)
 
+  def apply(ident:String): CardType = all.find(_.ident == ident).getOrElse(MASTERCARD)
+
 }
 
 
