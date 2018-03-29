@@ -1,28 +1,23 @@
 package shared
 
-import com.thoughtworks.binding.Binding.Var
 import julienrf.json.derived
 import play.api.libs.json._
 
 
-sealed trait OrderStepsData extends StepData
-
-object OrderStepsData {
-  implicit val jsonFormat: OFormat[OrderStepsData] = derived.oformat[OrderStepsData]()
-
-}
-
-
-case class BillingData(cardFirstName: Var[String] = Var("Peter")
-                       , cardName: Var[String] = Var("Muster")
-                       , cardType: Var[CardType] = Var(CardType.VISA)
-                       , cardNumber: Var[String] = Var("")
-                       , cardCVC: Var[String] = Var("")
-                       , cardExpMount: Var[Month] = Var(Month.JAN)
-                       , cardExpYear: Var[Int] = Var(2018)) extends OrderStepsData {
+case class BillingData(cardFirstName: String="Peter"
+                       , cardName: String="Muster"
+                       , cardType: CardType=CardType.VISA
+                       , cardNumber: String=""
+                       , cardCVC: String=""
+                       , cardExpMount: Month=Month.JAN
+                       , cardExpYear: Int=2018) {
 
   lazy val asJson: JsObject =
     Json.toJson(this).as[JsObject]
+
+}
+object BillingData {
+  implicit val jsonFormat: OFormat[BillingData] = derived.oformat[BillingData]()
 
 }
 
@@ -80,16 +75,14 @@ object Month {
   implicit val jsonFormat: OFormat[Month] = derived.oformat[Month]()
 }
 
-case class ShippingData(shippingOption: Var[ShippingOption] = Var(ShippingOption.FREE))
-  extends OrderStepsData {
+case class ShippingData(shippingOption: ShippingOption=ShippingOption.FREE) {
 
-  private lazy val value: JsValue = Json.toJson(this)
   lazy val asJson: JsObject =
-    value.as[JsObject]
+    Json.toJson(this).as[JsObject]
 }
 
 object ShippingData {
- // implicit val jsonFormat: OFormat[ShippingData] = Json.format[ShippingData]
+ implicit val jsonFormat: OFormat[ShippingData] = Json.format[ShippingData]
 }
 
 case class ShippingOption(name: String, label: String, amount: Double = 0) {

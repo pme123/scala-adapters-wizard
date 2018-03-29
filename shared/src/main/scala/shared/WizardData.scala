@@ -61,8 +61,6 @@ object WizardData {
 
 }
 
-trait StepData
-
 case class WizardStep(ident: String
                       , title: String
                       , descr: String

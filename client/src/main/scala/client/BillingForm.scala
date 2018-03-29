@@ -1,23 +1,49 @@
 package client
 
+import client.ShippingFormData.{error, info}
 import com.thoughtworks.binding.Binding.{Constants, Var}
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
+import play.api.libs.json.{JsError, JsSuccess}
 import pme123.adapters.client.ClientUtils
 import pme123.adapters.client.SemanticUI.jq2semantic
-import shared.{CardType, Month}
+import shared._
 
 import scala.scalajs.js
 
-case class BillingData(cardFirstName: Var[String] = Var("Peter")
-                       , cardName: Var[String] = Var("Muster")
-                       , cardType: Var[CardType] = Var(CardType.VISA)
-                       , cardNumber: Var[String] = Var("")
-                       , cardCVC: Var[String] = Var("")
-                       , cardExpMount: Var[Month] = Var(Month.JAN)
-                       , cardExpYear: Var[Int] = Var(2018)
-                      )
+case class BillingFormData(cardFirstName: Var[String] = Var("Peter")
+                           , cardName: Var[String] = Var("Muster")
+                           , cardType: Var[CardType] = Var(CardType.VISA)
+                           , cardNumber: Var[String] = Var("")
+                           , cardCVC: Var[String] = Var("")
+                           , cardExpMount: Var[Month] = Var(Month.JAN)
+                           , cardExpYear: Var[Int] = Var(2018)
+                          )
+
+object BillingFormData {
+  def apply(maybeStep: Option[WizardStep]): BillingFormData = {
+    (for {
+      step <- maybeStep
+      data <- step.stepData
+    } yield data).map { jsStep =>
+      jsStep.validate[BillingData] match {
+        case JsSuccess(value, _) => BillingFormData(Var(value.cardFirstName)
+          , Var(value.cardName)
+          , Var(value.cardType)
+          , Var(value.cardNumber)
+          , Var(value.cardCVC)
+          , Var(value.cardExpMount)
+          , Var(value.cardExpYear))
+        case JsError(errors) => errors.foreach(e => error(s"Error on Path ${e._1}: ${e._2}"))
+          BillingFormData()
+      }
+    }.getOrElse{
+      info(s"No BillingFormData: $maybeStep")
+      BillingFormData()
+    }
+  }
+}
 
 
 case class BillingForm(wizardUIState: WizardUIState)

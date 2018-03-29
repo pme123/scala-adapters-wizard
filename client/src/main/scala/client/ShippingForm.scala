@@ -1,12 +1,35 @@
 package client
 
-import com.thoughtworks.binding.Binding.Constants
+import com.thoughtworks.binding.Binding.{Constants, Var}
 import com.thoughtworks.binding.{Binding, dom}
 import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
+import play.api.libs.json.{JsError, JsSuccess}
 import pme123.adapters.client.ClientUtils
 import pme123.adapters.client.SemanticUI.jq2semantic
-import shared.ShippingOption
+import pme123.adapters.shared.Logger
+import shared.{ShippingData, ShippingOption, WizardStep}
+
+case class ShippingFormData(shippingOption: Var[ShippingOption] = Var(ShippingOption.FREE))
+
+object ShippingFormData extends Logger {
+
+  def apply(maybeStep: Option[WizardStep]): ShippingFormData = {
+    (for {
+      step <- maybeStep
+      data <- step.stepData
+    } yield data).map { jsStep =>
+      jsStep.validate[ShippingData] match {
+        case JsSuccess(value, _) => ShippingFormData(Var(value.shippingOption))
+        case JsError(errors) => errors.foreach(e => error(s"Error on Path ${e._1}: ${e._2}"))
+          ShippingFormData()
+      }
+    }.getOrElse{
+      info(s"No Sipping Data: $maybeStep")
+      ShippingFormData()
+    }
+  }
+}
 
 case class ShippingForm(wizardUIState: WizardUIState)
   extends ClientUtils {
