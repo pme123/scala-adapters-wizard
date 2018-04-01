@@ -13,30 +13,35 @@ case class WizardForms(wizardUIState: WizardUIState)
   def create(): Binding[HTMLElement] = {
     val activeStep = wizardUIState.activeStep.bind
 
+    if (activeStep.nonEmpty)
     <div class="ui form">
       {activeStep match {
+      case Some(WizardStep(shared.shippingIdent, _, _, _, _)) =>
+        ShippingForm(wizardUIState).shipping.bind
       case Some(WizardStep(shared.billingIdent, _, _, _, _)) =>
         BillingForm(wizardUIState).billing.bind
       case Some(WizardStep(shared.confirmOrderIdent, _, _, _, _)) =>
         ConfirmOrderForm(wizardUIState).confirmOrder.bind
-      case _ =>
-        ShippingForm(wizardUIState).shipping.bind
+      case other => <div>
+        {s"Unexpected Step: $other!"}
+      </div>
     }}<div class="ui three bottom attached buttons">
       {backButton.bind //
       }<div class="or" data:data-text=""></div>{//
       nextButton.bind}
     </div>
     </div>
+    else <div>Process Finished!</div>
   }
 
   @dom
   private def nextButton = {
     val activeStep = wizardUIState.activeStep.bind
-    <button class={s"ui positive ${disableNextButton(activeStep)} button"}
-              onclick={_: Event =>
+    <button class={s"ui positive button"}
+            onclick={_: Event =>
                 goToNext()}
-              data:data-tooltip="Go to the next step"
-              data:data-position="top left">
+            data:data-tooltip="Go to the next step"
+            data:data-position="top left">
         Next
       </button>
   }
@@ -59,12 +64,6 @@ case class WizardForms(wizardUIState: WizardUIState)
       .map(_ => "")
       .getOrElse("disabled")
 
-  private def disableNextButton(activeStep: Option[WizardStep]) =
-    activeStep
-      .find(wizardUIState.wizardData.value.hasNextStep)
-      .map(_ => "")
-      .getOrElse("disabled")
-
   private def goToNext() {
     val step = wizardUIState.activeStep.value
     val nextStep = step.flatMap(st => wizardUIState.wizardData.value.nextStep(st))
@@ -76,4 +75,8 @@ case class WizardForms(wizardUIState: WizardUIState)
     val backStep = step.flatMap(st => wizardUIState.wizardData.value.backStep(st))
     changeActiveStep(backStep)
   }
+}
+
+trait FormData {
+  def wizardStep: WizardStep
 }

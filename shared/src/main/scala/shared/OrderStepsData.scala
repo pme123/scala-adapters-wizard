@@ -3,6 +3,15 @@ package shared
 import julienrf.json.derived
 import play.api.libs.json._
 
+case class PurchaseData(orderList: Seq[(String, Double)]) {
+  lazy val asJson: JsValue =
+    Json.toJson(this)
+}
+
+object PurchaseData {
+  implicit val jsonFormat: OFormat[PurchaseData] = derived.oformat[PurchaseData]()
+
+}
 
 case class BillingData(cardFirstName: String="Peter"
                        , cardName: String="Muster"
@@ -12,8 +21,8 @@ case class BillingData(cardFirstName: String="Peter"
                        , cardExpMount: Month=Month.JAN
                        , cardExpYear: Int=2018) {
 
-  lazy val asJson: JsObject =
-    Json.toJson(this).as[JsObject]
+  lazy val asJson: JsValue =
+    Json.toJson(this)
 
 }
 object BillingData {
@@ -77,8 +86,8 @@ object Month {
 
 case class ShippingData(shippingOption: ShippingOption=ShippingOption.FREE) {
 
-  lazy val asJson: JsObject =
-    Json.toJson(this).as[JsObject]
+  lazy val asJson: JsValue =
+    Json.toJson(this)
 }
 
 object ShippingData {

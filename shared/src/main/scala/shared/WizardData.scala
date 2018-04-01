@@ -1,11 +1,12 @@
 package shared
 
 import julienrf.json.derived
-import play.api.libs.json.{JsObject, Json, OFormat}
+import play.api.libs.json.{JsValue, Json, OFormat}
 import shared.StepStatus.{ACTIVE, NONE}
 
 case class WizardData(ident: WizardData.WizardIdent
-                      , steps: List[WizardStep] = Nil) {
+                      , steps: List[WizardStep] = Nil
+                      , startData: Option[JsValue] = None) {
 
   def hasNextStep(step: WizardStep): Boolean =
     nextStep(step).nonEmpty
@@ -64,7 +65,7 @@ object WizardData {
 case class WizardStep(ident: String
                       , title: String
                       , descr: String
-                      , stepData: Option[JsObject] = None
+                      , stepData: Option[JsValue] = None
                       , status: StepStatus = StepStatus.NONE
                       )
 
