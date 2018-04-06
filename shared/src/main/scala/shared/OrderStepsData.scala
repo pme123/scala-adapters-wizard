@@ -1,7 +1,10 @@
 package shared
 
+import cats.data.Validated
+import cats.implicits._
 import julienrf.json.derived
 import play.api.libs.json._
+import shared.validation.{Validation, Validators}
 
 case class PurchaseData(orderList: Seq[(String, Double)]) {
   lazy val asJson: JsValue =
@@ -13,20 +16,59 @@ object PurchaseData {
 
 }
 
+case class Validator[T](field: String, validate: T => Validation[T]) {
+
+}
+
 case class BillingData(cardFirstName: String="Peter"
                        , cardName: String="Muster"
                        , cardType: CardType=CardType.VISA
                        , cardNumber: String=""
                        , cardCVC: String=""
-                       , cardExpMount: Month=Month.JAN
+                       , cardExpMonth: Month=Month.JAN
                        , cardExpYear: Int=2018) {
+
+  import BillingData._
 
   lazy val asJson: JsValue =
     Json.toJson(this)
 
+  def validate(): Validation[BillingData] = {
+    (validateCardFirstName(cardFirstName)
+      , validateCardName(cardName)
+      , validateCardType(cardType)
+      , validateCardNumber(cardNumber)
+      , validateCardCVC(cardCVC)
+      , validateCardExpMonth(cardExpMonth)
+      , validateCardExpYear(cardExpYear)).mapN(BillingData.apply)
+  }
 }
-object BillingData {
+
+object BillingData
+extends Validators {
   implicit val jsonFormat: OFormat[BillingData] = derived.oformat[BillingData]()
+
+  lazy val validators = Seq(
+    Validator[String]("cardFirstName", validateCardFirstName)
+    , Validator[String]("cardName", validateCardName)
+    , Validator[CardType]("cardType", validateCardType)
+    , Validator[String]("cardNumber", validateCardNumber)
+    , Validator[String]("cardCVC", validateCardCVC)
+    , Validator[Month]("cardExpMonth", validateCardExpMonth)
+    , Validator[Int]("cardExpYear", validateCardExpYear)
+  )
+
+  private def validateCardFirstName(value: String): Validation[String] =
+    emptyString(value)
+  private def validateCardName(value: String): Validation[String] =
+    emptyString(value)
+  private def validateCardType(value: CardType): Validation[CardType] = Validated.valid(value)
+  private def validateCardNumber(value: String): Validation[String] =
+    emptyString(value)
+  private def validateCardCVC(value: String): Validation[String] =
+    emptyString(value)
+  private def validateCardExpMonth(value: Month): Validation[Month] = Validated.valid(value)
+  private def validateCardExpYear(value: Int): Validation[Int] = Validated.valid(value)
 
 }
 

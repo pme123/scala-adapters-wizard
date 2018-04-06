@@ -12,8 +12,7 @@ case class WizardForms(wizardUIState: WizardUIState)
   @dom
   def create(): Binding[HTMLElement] = {
     val activeStep = wizardUIState.activeStep.bind
-
-    if (activeStep.nonEmpty)
+ if (activeStep.nonEmpty)
     <div class="ui form">
       {activeStep match {
       case Some(WizardStep(shared.shippingIdent, _, _, _, _)) =>
@@ -25,7 +24,8 @@ case class WizardForms(wizardUIState: WizardUIState)
       case other => <div>
         {s"Unexpected Step: $other!"}
       </div>
-    }}<div class="ui three bottom attached buttons">
+    }}  <div class="ui error message"></div>
+      <div class="ui three bottom attached buttons">
       {backButton.bind //
       }<div class="or" data:data-text=""></div>{//
       nextButton.bind}
@@ -37,7 +37,7 @@ case class WizardForms(wizardUIState: WizardUIState)
   @dom
   private def nextButton = {
     val activeStep = wizardUIState.activeStep.bind
-    <button class={s"ui positive button"}
+    <button class={s"ui positive submit button"}
             onclick={_: Event =>
                 goToNext()}
             data:data-tooltip="Go to the next step"

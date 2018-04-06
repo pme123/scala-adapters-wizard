@@ -20,7 +20,7 @@ object Settings {
 
   // main versions
   lazy val scalaV = "2.12.4"
-  lazy val adaptersV = "1.0.8"
+  lazy val adaptersV = "1.1.2"
   lazy val bindingV = "11.0.1"
 
   lazy val scalaTestV = "3.0.4"
@@ -70,6 +70,7 @@ object Settings {
     scalacOptions ++= Seq("-Xmax-classfile-name", "78")
     , addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
     , jsDependencies ++= Seq()
+    , scalacOptions += "-P:scalajs:sjsDefinedByDefault"
   )
   lazy val clientDependencies: Seq[Def.Setting[_]] = Def.settings(libraryDependencies ++= Seq(
     "com.github.pme123.scala-adapters" %%% "scala-adapters-client" % adaptersV
@@ -78,7 +79,7 @@ object Settings {
 
   lazy val sharedDependencies: Seq[Def.Setting[_]] = Def.settings(libraryDependencies ++= Seq(
     "com.github.pme123.scala-adapters" %%% "scala-adapters" % adaptersV
-    , "com.thoughtworks.binding" %%% "binding" % bindingV
+    , "org.typelevel" %%% "cats-core" % "1.0.1"
     , "org.scalatest" %%% "scalatest" % scalaTestV % Test
 
   ))
@@ -99,6 +100,8 @@ object Settings {
     , publishArtifact in(Compile, packageDoc) := false
     , publishArtifact in packageDoc := false
     , sources in(Compile, doc) := Seq.empty
+    // cats
+    , scalacOptions += "-Ypartial-unification"
   ) ++ organizationSettings
 
   private lazy val buildInfoSettings = Seq(

@@ -1,5 +1,6 @@
 package client
 
+import client.CustomSemanticUI.{Field, Form, Rule, jq2semantic}
 import client.ShippingFormData.{error, info}
 import com.thoughtworks.binding.Binding.{Constants, Var}
 import com.thoughtworks.binding.{Binding, dom}
@@ -7,10 +8,12 @@ import org.scalajs.dom.raw.{Event, HTMLElement}
 import org.scalajs.jquery.jQuery
 import play.api.libs.json.{JsError, JsSuccess}
 import pme123.adapters.client.ClientUtils
-import pme123.adapters.client.SemanticUI.jq2semantic
-import shared._
+import shared.{Validator, _}
+import BillingData.validators
 
 import scala.scalajs.js
+import scala.scalajs.js.Dynamic.{global => g}
+import scala.scalajs.js.JSON
 
 case class BillingFormData(cardFirstName: Var[String] = Var("Peter")
                            , cardName: Var[String] = Var("Muster")
@@ -22,6 +25,7 @@ case class BillingFormData(cardFirstName: Var[String] = Var("Peter")
                           )
 
 object BillingFormData {
+
   def apply(maybeStep: Option[WizardStep]): BillingFormData = {
     (for {
       step <- maybeStep
@@ -33,7 +37,7 @@ object BillingFormData {
           , Var(value.cardType)
           , Var(value.cardNumber)
           , Var(value.cardCVC)
-          , Var(value.cardExpMount)
+          , Var(value.cardExpMonth)
           , Var(value.cardExpYear))
         case JsError(errors) => errors.foreach(e => error(s"Error on Path ${e._1}: ${e._2}"))
           BillingFormData()
@@ -43,6 +47,29 @@ object BillingFormData {
       BillingFormData()
     }
   }
+
+  def rules: Form = new Form {
+    private val tuples: js.Dynamic = validators.map(v => js.Dynamic.literal(v.field -> field(v)))
+      .reduce((a: js.Dynamic, b:js.Dynamic) => a + b)
+    println(s"tubles: ${JSON.stringify(tuples)}")
+     val fields: js.Object = js.Dynamic.literal(
+          validators.head.field -> field(validators.head)
+          , validators.last.field -> field(validators.last)
+        )
+   // val fields: js.Object = (tuples)
+
+  }
+
+  private def field(v: Validator[_]): Field = {
+    val f = new Field {
+    val identifier: String = s"${v.field}"
+    val rules: js.Array[Rule] = js.Array(new Rule {
+      val `type`: String = s"validate['${v.field}']"
+      override val prompt = "{name} is set to \"{value}\" that is totally wrong."
+    })
+  }
+    println(s"The field is ${JSON.stringify(f)}")
+  f}
 }
 
 
@@ -53,12 +80,10 @@ extends ClientUtils {
   def billing: Binding[HTMLElement] = {
     val billingData = wizardUIState.billingData.value
       <div class="ui attached segment">
-        <iframe style="display:none" onload={_: Event =>
-          // this as be done after div is rendered
-          jQuery(".ui.dropdown").dropdown(js.Dynamic.literal(on = "hover"))}></iframe>
+        <iframe style="display:none" onload={_: Event => initForm()}></iframe>
 
         <div class="fields">
-          <div class="field">
+          <div class="required field">
             <label>First Name on Account</label>
             <input type="text"
                    id="cardFirstName"
@@ -67,7 +92,7 @@ extends ClientUtils {
                    onchange={_: Event =>
                      billingData.cardFirstName.value = cardFirstName.value}/>
           </div>
-          <div class="field">
+          <div class="required field">
             <label>Last Name on Account</label>
             <input type="text"
                    id="cardName"
@@ -77,7 +102,7 @@ extends ClientUtils {
                      billingData.cardName.value = cardName.value}/>
           </div>
         </div>
-        <div class="field">
+        <div class="required field">
           <label>Card Type</label>
           <div class="ui selection dropdown">
             <input type="hidden"
@@ -93,7 +118,7 @@ extends ClientUtils {
           </div>
         </div>
         <div class="fields">
-          <div class="seven wide field">
+          <div class="required seven wide field">
             <label>Card Number</label>
             <input type="text"
                    id="cardNumber"
@@ -103,7 +128,7 @@ extends ClientUtils {
                    onchange={_: Event =>
                      billingData.cardNumber.value = cardNumber.value}/>
           </div>
-          <div class="three wide field">
+          <div class="required three wide field">
             <label>CVC</label>
             <input type="text"
                    id="cardCVC"
@@ -116,7 +141,7 @@ extends ClientUtils {
           <div class="six wide field">
             <label>Expiration</label>
             <div class="two fields">
-              <div class="field">
+              <div class="required field">
                 <select class="ui fluid search dropdown"
                         id="cardExpMount"
                         value={billingData.cardExpMount.bind.ident}
@@ -125,7 +150,7 @@ extends ClientUtils {
                   {Constants(Month.all.map(monthOption): _*).map(_.bind)}
                 </select>
               </div>
-              <div class="field">
+              <div class="required field">
                 <input type="text"
                        id="cardExpYear"
                        data:maxlength="4" placeholder="Year"
@@ -136,7 +161,46 @@ extends ClientUtils {
             </div>
           </div>
         </div>
+        <div class="ui primary submit button">Submit</div>
       </div>
+  }
+
+  // this must be called after rendering!
+  private def initForm() {
+    // this as be done after div is rendered
+   // jQuery(".ui.form").form()
+    g.$.fn.form.settings.rules.validate = { (value: js.Dynamic, field: js.Dynamic) =>
+      println(s"Validate $value - $field")
+    //  val result = validators.find(_.field == field)
+     //   .map(_.validate(value))
+
+false
+    }
+
+
+    val form = new Form {
+      val fields: js.Object = js.Dynamic.literal (
+        cardNumber = new Field {
+          val identifier: String = "cardNumber"
+          val rules: js.Array[Rule] = js.Array(new Rule {
+            val `type`: String = "empty"
+          })
+        },
+        cardCVC = new Field {
+          val identifier: String = "cardCVC"
+          val rules: js.Array[Rule] = js.Array(new Rule {
+            val `type`: String = "validate['cardCVC']"
+            override val prompt = "You must a valid CVC - see ..."
+          })
+        }
+    )}
+    println(s"Correct Form: ${JSON.stringify(form)}")
+
+    val rules = BillingFormData.rules
+    println(s"BillingFormData.rules: ${JSON.stringify(rules)}")
+    jQuery(".ui.form").form(rules)
+
+
   }
 
   @dom

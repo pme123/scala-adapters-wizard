@@ -1,6 +1,7 @@
 package client
 
 import com.thoughtworks.binding.{Binding, dom}
+import org.scalajs.dom.document
 import org.scalajs.dom.raw.HTMLElement
 import pme123.adapters.client.{AdaptersClient, DefaultView, JobProcessView}
 import pme123.adapters.shared._
@@ -20,6 +21,11 @@ case class WizardClient(context: String, websocketPath: String)
       {Wizard(context, websocketPath).create().bind}{//
       css.bind}
     </div>
+  }
+
+  override def create(): Unit = {
+    dom.render(document.body, render)
+
   }
 
   @dom

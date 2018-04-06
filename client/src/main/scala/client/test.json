@@ -1,0 +1,34 @@
+{
+  "identifier": "cardFirstName",
+  "rules": [
+    {
+      "type": "validate['cardFirstName']"
+    }
+  ],
+  "v$1$f": {
+    "field$1": "cardFirstName",
+    "validate$1": {}
+  }
+}
+
+{
+  "fields": {
+    "cardNumber": {
+      "identifier": "cardNumber",
+      "rules": [
+        {
+          "type": "empty"
+        }
+      ]
+    },
+    "cardCVC": {
+      "identifier": "cardCVC",
+      "rules": [
+        {
+          "type": "validate['cardCVC']",
+          "prompt": "You must a valid CVC - see ..."
+        }
+      ]
+    }
+  }
+}
