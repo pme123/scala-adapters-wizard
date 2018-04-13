@@ -1,14 +1,16 @@
 package server
 
 import javax.inject.Inject
-
+import play.Environment
 import play.api.libs.json.Json
 import play.api.mvc._
 import pme123.adapters.server.boundary.{AccessControl, JobCockpitController, Secured}
 
 class WizardController @Inject()(jobController: JobCockpitController
                                  , val accessControl: AccessControl
-                                 , val cc: ControllerComponents)
+                                 , val cc: ControllerComponents
+                                 , val env: Environment
+                                )
   extends AbstractController(cc)
     with Secured {
 

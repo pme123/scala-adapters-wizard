@@ -20,7 +20,7 @@ object Settings {
 
   // main versions
   lazy val scalaV = "2.12.4"
-  lazy val adaptersV = "1.1.2"
+  lazy val adaptersV = "1.1.3"
   lazy val bindingV = "11.0.1"
 
   lazy val scalaTestV = "3.0.4"
@@ -74,6 +74,7 @@ object Settings {
   )
   lazy val clientDependencies: Seq[Def.Setting[_]] = Def.settings(libraryDependencies ++= Seq(
     "com.github.pme123.scala-adapters" %%% "scala-adapters-client" % adaptersV
+    ,	"com.github.pme123" % "scala-adapters-form" % "0.1.0"
     , "org.scalatest" %%% "scalatest" % scalaTestV % Test
   ))
 
